@@ -1,36 +1,37 @@
-import { useState } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import {
   Box,
-  Card,
-  CardContent,
   TextField,
   Button,
   Typography,
-  Container,
+  CircularProgress,
 } from "../components/base";
+import { primary, custom1, action } from "../assets/colors";
+import { AuthLayout } from "../components/organisms/AuthLayout";
 import { useAuth } from "../hooks";
-import { CONFIG } from "../config";
+import { loginSchema, type LoginFormData } from "../schemas";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const loginForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange",
+  });
 
   const { login, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If already authenticated, redirect to intended page or dashboard
+  // If already authenticated, redirect to dashboard
   if (isAuthenticated) {
-    const from = location.state?.from?.pathname || "/dashboard";
-    return <Navigate to={from} replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleLogin = async (data: LoginFormData) => {
     try {
-      await login(email, password);
+      await login(data.email, data.password);
+      // Redirect to intended page or dashboard
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, { replace: true });
     } catch {
@@ -39,84 +40,143 @@ export const Login = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <AuthLayout>
+      <form onSubmit={loginForm.handleSubmit(handleLogin)}>
+        <Controller
+          name="email"
+          control={loginForm.control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="Email"
+              margin="normal"
+              error={Boolean(loginForm.formState.errors.email)}
+              helperText={loginForm.formState.errors.email?.message}
+              disabled={isLoading}
+            />
+          )}
+        />
+        <Controller
+          name="password"
+          control={loginForm.control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="Password"
+              type="password"
+              margin="normal"
+              error={Boolean(loginForm.formState.errors.password)}
+              helperText={loginForm.formState.errors.password?.message}
+              disabled={isLoading}
+            />
+          )}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          sx={{ mt: 3 }}
+          size="large"
+          disabled={isLoading || !loginForm.formState.isValid}
+        >
+          {isLoading ? <CircularProgress size={24} /> : "LOGIN"}
+        </Button>
+      </form>
+
       <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        gap={3}
+        sx={{
+          mt: 3,
+          p: 4,
+          background: `linear-gradient(135deg, ${custom1.background} 0%, ${primary.background} 100%)`,
+          borderRadius: 3,
+          position: "relative",
+          overflow: "hidden",
+        }}
       >
-        <Typography variant="h3" component="h1" textAlign="center">
-          {CONFIG.APP_NAME}
-        </Typography>
+        {/* Modern geometric background elements */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: -20,
+            right: -20,
+            width: 80,
+            height: 80,
+            background: primary.main,
+            opacity: 0.15,
+            borderRadius: "50%",
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: -10,
+            left: -10,
+            width: 60,
+            height: 60,
+            background: primary.main,
+            opacity: 0.12,
+            borderRadius: "50%",
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "10%",
+            width: 4,
+            height: 40,
+            background: primary.main,
+            opacity: 0.25,
+            borderRadius: 2,
+            transform: "rotate(45deg)",
+          }}
+        />
 
-        <Typography variant="h6" color="text.secondary" textAlign="center">
-          Anonymous Feedback Platform
-        </Typography>
+        {/* Main content */}
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: primary.main,
+              fontWeight: 600,
+              textAlign: "center",
+              mb: 1,
+              textShadow: `0 1px 2px ${action.disabled}`,
+            }}
+          >
+            ✨ Your appreciation inspires,
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              color: primary.main,
+              fontWeight: 600,
+              textAlign: "center",
+              mb: 2,
+              textShadow: `0 1px 2px ${action.disabled}`,
+            }}
+          >
+            Your feedback improves ✨
+          </Typography>
 
-        <Card sx={{ width: "100%", maxWidth: 400 }}>
-          <CardContent>
-            <Typography variant="h5" component="h2" textAlign="center" mb={3}>
-              Sign In
-            </Typography>
-
-            <Box component="form" onSubmit={handleSubmit} noValidate>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={isLoading || !email || !password}
-              >
-                {isLoading ? "Signing In..." : "Sign In"}
-              </Button>
-
-              <Box textAlign="center">
-                <Typography variant="body2" color="text.secondary">
-                  Don't have an account?{" "}
-                  <Button
-                    variant="text"
-                    onClick={() => navigate("/register")}
-                    disabled={isLoading}
-                  >
-                    Sign up
-                  </Button>
-                </Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+          {/* Modern accent line */}
+          <Box
+            sx={{
+              width: 60,
+              height: 3,
+              background: primary.main,
+              opacity: 0.6,
+              borderRadius: 2,
+              mx: "auto",
+              mt: 2,
+            }}
+          />
+        </Box>
       </Box>
-    </Container>
+    </AuthLayout>
   );
-}; 
+};

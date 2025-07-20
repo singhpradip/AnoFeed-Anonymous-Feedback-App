@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useLoginMutation,
   useLogoutMutation,
+  useRegisterMutation,
   useUserProfileQuery,
 } from "../api";
 import { LOCAL_STORAGE_KEYS } from "../constants";
@@ -81,16 +82,41 @@ export const useAuth = () => {
     },
   });
 
+  // Register mutation
+  const registerMutation = useRegisterMutation({
+    onSuccess: (response) => {
+      if (response.data) {
+        const { user: userData, token } = response.data;
+
+        // Store tokens
+        localStorage.setItem(LOCAL_STORAGE_KEYS.TOKEN, token);
+        localStorage.setItem(LOCAL_STORAGE_KEYS.USER, JSON.stringify(userData));
+
+        // Invalidate and refetch all queries (this will update user state)
+        queryClient.invalidateQueries();
+
+        // Show success message
+        toast.success("Account created successfully! Welcome!");
+      }
+    },
+    onError: (error) => {
+      const apiError = error as { response?: { data?: { message?: string } } };
+      const errorMsg =
+        apiError.response?.data?.message ||
+        "Registration failed. Please try again.";
+      toast.error(errorMsg);
+    },
+  });
+
   // Login function
   const login = async (email: string, password: string): Promise<void> => {
     const loginData: LoginData = { email, password };
     await loginMutation.mutateAsync(loginData);
   };
 
-  // Register function (placeholder for now)
+  // Register function
   const register = async (userData: RegisterData): Promise<void> => {
-    // TODO: Implement register mutation
-    console.log("Register:", userData);
+    await registerMutation.mutateAsync(userData);
   };
 
   // Logout function
@@ -106,7 +132,10 @@ export const useAuth = () => {
   };
 
   const isLoading =
-    loginMutation.isPending || logoutMutation.isPending || isUserLoading;
+    loginMutation.isPending ||
+    logoutMutation.isPending ||
+    registerMutation.isPending ||
+    isUserLoading;
 
   return {
     user,
@@ -118,6 +147,7 @@ export const useAuth = () => {
     // Additional useful states from React Query
     isLoginPending: loginMutation.isPending,
     isLogoutPending: logoutMutation.isPending,
+    isRegisterPending: registerMutation.isPending,
     userError,
   };
 };

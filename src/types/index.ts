@@ -2,6 +2,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  role?: string;
+  department?: string;
   avatar?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -71,6 +73,8 @@ export type FeedbackCategory =
 export interface RegisterData {
   name: string;
   email: string;
+  role?: string;
+  department?: string;
   password: string;
   confirmPassword: string;
 }
@@ -146,6 +150,8 @@ export interface DashboardStats {
 export interface RegisterData {
   name: string;
   email: string;
+  role?: string;
+  department?: string;
   password: string;
 }
 

@@ -37,8 +37,13 @@ export const navigationItems: NavigationItem[] = [
 
 export const publicRoutes: NavigationItem[] = [
   {
-    path: '/login',
-    label: 'Login',
+    path: "/login",
+    label: "Login",
+    requiresAuth: false,
+  },
+  {
+    path: "/register",
+    label: "Sign Up",
     requiresAuth: false,
   },
 ];

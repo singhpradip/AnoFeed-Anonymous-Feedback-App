@@ -6,17 +6,22 @@ import { navigationItems, publicRoutes } from './navigation';
 
 // Dynamic page imports based on route paths
 const pageComponents = {
-  '/dashboard': React.lazy(() => 
-    import('../pages/Dashboard').then(module => ({ default: module.Dashboard }))
+  "/dashboard": React.lazy(() =>
+    import("../pages/Dashboard").then((module) => ({
+      default: module.Dashboard,
+    }))
   ),
-  '/teams': React.lazy(() => 
-    import('../pages/Teams').then(module => ({ default: module.Teams }))
+  "/teams": React.lazy(() =>
+    import("../pages/Teams").then((module) => ({ default: module.Teams }))
   ),
-  '/feedback': React.lazy(() => 
-    import('../pages/Feedback').then(module => ({ default: module.Feedback }))
+  "/feedback": React.lazy(() =>
+    import("../pages/Feedback").then((module) => ({ default: module.Feedback }))
   ),
-  '/login': React.lazy(() => 
-    import('../pages/Login').then(module => ({ default: module.Login }))
+  "/login": React.lazy(() =>
+    import("../pages/Login").then((module) => ({ default: module.Login }))
+  ),
+  "/register": React.lazy(() =>
+    import("../pages/Register").then((module) => ({ default: module.Register }))
   ),
 };
 
