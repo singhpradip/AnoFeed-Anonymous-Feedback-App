@@ -4,7 +4,8 @@ export interface JWTPayload {
   sub?: string;
   email?: string;
   userId?: string;
-  [key: string]: unknown;
+  role?: string;
+  tenantId?: string;
 }
 
 export const decodeJWT = (token?: string): JWTPayload | null => {

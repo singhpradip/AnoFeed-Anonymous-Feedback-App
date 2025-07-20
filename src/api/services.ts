@@ -1,23 +1,24 @@
 import type { MutationFunction } from '@tanstack/react-query';
 import { API } from '../lib/api';
 import { AUTH_ENDPOINTS, TEAM_ENDPOINTS, FEEDBACK_ENDPOINTS } from '../constants';
-import type { 
-  User, 
-  Team, 
-  TeamMember, 
-  Feedback, 
+import type {
+  User,
+  Team,
+  TeamMember,
+  Feedback,
   FeedbackWithUser,
-  LoginData, 
-  RegisterData, 
-  CreateTeamData, 
+  LoginData,
+  RegisterData,
+  CreateTeamData,
   CreateFeedbackData,
   TeamInviteData,
   UpdateUserRoleData,
   ApiResponse,
   PaginatedResponse,
   PaginationParams,
-  DashboardStats
-} from '../types';
+  DashboardStats,
+  TeamAnalytics,
+} from "../types";
 
 // Auth Services
 export const loginUser: MutationFunction<
@@ -192,8 +193,10 @@ export const fetchDashboardStats = async (
 export const fetchTeamAnalytics = async (
   teamId: string,
   params?: { startDate?: string; endDate?: string }
-): Promise<ApiResponse<Record<string, unknown>>> => {
-  const response = await API.get(FEEDBACK_ENDPOINTS.TEAM_ANALYTICS(teamId), { params });
+): Promise<ApiResponse<TeamAnalytics>> => {
+  const response = await API.get(FEEDBACK_ENDPOINTS.TEAM_ANALYTICS(teamId), {
+    params,
+  });
   return response.data;
 };
 

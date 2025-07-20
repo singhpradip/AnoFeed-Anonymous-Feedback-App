@@ -48,18 +48,23 @@ export interface FeedbackWithUser {
   targetUser: User;
 }
 
-export enum TeamRole {
-  ADMIN = 'admin',
-  MEMBER = 'member',
-}
+export const TeamRole = {
+  ADMIN: "admin",
+  MEMBER: "member",
+} as const;
 
-export enum FeedbackCategory {
-  POSITIVE = 'positive',
-  CONSTRUCTIVE = 'constructive',
-  SUGGESTION = 'suggestion',
-  APPRECIATION = 'appreciation',
-  CONCERN = 'concern',
-}
+export type TeamRole = (typeof TeamRole)[keyof typeof TeamRole];
+
+export const FeedbackCategory = {
+  POSITIVE: "positive",
+  CONSTRUCTIVE: "constructive",
+  SUGGESTION: "suggestion",
+  APPRECIATION: "appreciation",
+  CONCERN: "concern",
+} as const;
+
+export type FeedbackCategory =
+  (typeof FeedbackCategory)[keyof typeof FeedbackCategory];
 
 export interface AuthContextType {
   user: User | null;
@@ -107,7 +112,7 @@ export interface UpdateUserRoleData {
   role: TeamRole;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = Record<string, never>> {
   success: boolean;
   data?: T;
   message?: string;
@@ -118,7 +123,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface PaginatedResponse<T> {
@@ -149,4 +154,12 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
+}
+
+export interface TeamAnalytics {
+  totalFeedback: number;
+  averageRating: number;
+  feedbackByCategory: Record<string, number>;
+  feedbackTrends: Array<{ date: string; count: number }>;
+  topRatedMembers: Array<{ userId: string; rating: number; name: string }>;
 } 

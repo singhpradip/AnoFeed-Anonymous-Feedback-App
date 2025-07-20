@@ -18,4 +18,4 @@ export const Loadable = ({ loader, fallback }: LoadableOptions) => {
       <LazyComponent {...props} />
     </Suspense>
   );
-}; 
+};

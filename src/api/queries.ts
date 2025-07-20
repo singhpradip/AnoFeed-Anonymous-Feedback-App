@@ -24,6 +24,7 @@ import type {
   PaginatedResponse,
   PaginationParams,
   DashboardStats,
+  TeamAnalytics,
 } from '../types';
 
 // Auth Queries
@@ -187,7 +188,7 @@ export const useTeamAnalyticsQuery = ({
   enabled?: boolean;
   teamId?: string;
   params?: { startDate?: string; endDate?: string };
-}): UseQueryResult<ApiResponse<Record<string, unknown>>> =>
+}): UseQueryResult<ApiResponse<TeamAnalytics>> =>
   useQuery({
     queryKey: [FEEDBACK_QUERY_KEYS.TEAM_ANALYTICS, teamId, params],
     queryFn: () => fetchTeamAnalytics(teamId!, params),
