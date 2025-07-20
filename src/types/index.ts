@@ -66,14 +66,7 @@ export const FeedbackCategory = {
 export type FeedbackCategory =
   (typeof FeedbackCategory)[keyof typeof FeedbackCategory];
 
-export interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
-  logout: () => void;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-}
+
 
 export interface RegisterData {
   name: string;

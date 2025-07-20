@@ -4,7 +4,6 @@ import { CONFIG } from '../config/environment';
 import { LOCAL_STORAGE_KEYS } from '../constants';
 import { globalHeaders } from '../utils/globalHeaders';
 import { decodeJWT, isTokenExpired } from '../utils/jwt';
-import type { JWTPayload } from '../utils/jwt';
 
 export interface RefreshTokenResponse {
   access: string;

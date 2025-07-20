@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -5,46 +6,69 @@ import {
   Navigate,
 } from "react-router-dom";
 import { QueryProvider, ThemeProvider } from "./providers";
-import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { ProtectedRoute } from "./components/molecules/ProtectedRoute";
 import { Login } from "./pages/Login";
-import { AppRoutes } from "./routes/AppRoutes";
-import { appNavs } from "./routes/navs";
+import { PageSkeleton } from "./components/skeletons";
+
+// Lazy load protected pages
+const Dashboard = React.lazy(() =>
+  import("./pages/Dashboard").then((module) => ({ default: module.Dashboard }))
+);
+const Teams = React.lazy(() =>
+  import("./pages/Teams").then((module) => ({ default: module.Teams }))
+);
+const Feedback = React.lazy(() =>
+  import("./pages/Feedback").then((module) => ({ default: module.Feedback }))
+);
 
 function App() {
   return (
     <QueryProvider>
       <ThemeProvider>
-        <AuthProvider>
-          <Router>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login />} />
+        <Router>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
 
-              {/* Protected routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <AppRoutes />
-                  </ProtectedRoute>
-                }
-              >
-                {/* Dynamic routes from navigation config */}
-                {appNavs.map((nav) => (
-                  <Route
-                    key={nav.path || "index"}
-                    path={nav.path}
-                    element={<nav.component />}
-                  />
-                ))}
-              </Route>
+            {/* Protected routes with lazy loading */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<PageSkeleton />}>
+                    <Dashboard />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
 
-              {/* Catch all - redirect to home */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
-        </AuthProvider>
+            <Route
+              path="/teams"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<PageSkeleton />}>
+                    <Teams />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<PageSkeleton />}>
+                    <Feedback />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Default redirects */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Router>
       </ThemeProvider>
     </QueryProvider>
   );
