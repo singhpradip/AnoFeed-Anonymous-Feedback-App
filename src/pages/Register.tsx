@@ -116,23 +116,7 @@ export const Register = () => {
             />
           )}
         />
-        <Controller
-          name="confirmPassword"
-          control={registerForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Confirm Password"
-              type="password"
-              margin="normal"
-              error={Boolean(registerForm.formState.errors.confirmPassword)}
-              helperText={registerForm.formState.errors.confirmPassword?.message}
-              disabled={isLoading}
-            />
-          )}
-        />
+
         <Button
           type="submit"
           variant="contained"
