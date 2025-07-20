@@ -5,10 +5,11 @@ import {
   Navigate,
 } from "react-router-dom";
 import { QueryProvider, ThemeProvider } from "./providers";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { ProtectedRoute } from "./components/molecules/ProtectedRoute";
 import { Login } from "./pages/Login";
-import { Dashboard } from "./pages/Dashboard";
+import { AppRoutes } from "./routes/AppRoutes";
+import { appNavs } from "./routes/navs";
 
 function App() {
   return (
@@ -22,19 +23,25 @@ function App() {
 
               {/* Protected routes */}
               <Route
-                path="/dashboard"
+                path="/"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <AppRoutes />
                   </ProtectedRoute>
                 }
-              />
+              >
+                {/* Dynamic routes from navigation config */}
+                {appNavs.map((nav) => (
+                  <Route
+                    key={nav.path || "index"}
+                    path={nav.path}
+                    element={<nav.component />}
+                  />
+                ))}
+              </Route>
 
-              {/* Default redirect */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-              {/* Catch all - redirect to dashboard */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              {/* Catch all - redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>
         </AuthProvider>

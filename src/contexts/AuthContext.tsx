@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLoginMutation, useLogoutMutation, useUserProfileQuery } from '../api';
 import { LOCAL_STORAGE_KEYS } from '../constants';
 import { decodeJWT, isTokenExpired } from '../utils';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from './AuthContext.ts';
 import type { AuthContextType, User, LoginData } from '../types';
 
 interface AuthProviderProps {
