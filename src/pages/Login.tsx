@@ -1,15 +1,13 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Box, Typography } from "../components/base";
 import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-} from "../components/base";
+  AuthFormField,
+  AuthSubmitButton,
+  AuthFormContainer,
+} from "../components/molecules";
 import { primary, custom1, action } from "../assets/colors";
-import { AuthLayout } from "../components/organisms/AuthLayout";
 import { useAuth } from "../hooks";
 import { loginSchema, type LoginFormData } from "../schemas";
 
@@ -23,11 +21,6 @@ export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If already authenticated, redirect to dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   const handleLogin = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
@@ -40,52 +33,34 @@ export const Login = () => {
   };
 
   return (
-    <AuthLayout>
-      <form onSubmit={loginForm.handleSubmit(handleLogin)}>
-        <Controller
-          name="email"
-          control={loginForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Email"
-              margin="normal"
-              error={Boolean(loginForm.formState.errors.email)}
-              helperText={loginForm.formState.errors.email?.message}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Controller
-          name="password"
-          control={loginForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-              error={Boolean(loginForm.formState.errors.password)}
-              helperText={loginForm.formState.errors.password?.message}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{ mt: 3 }}
-          size="large"
-          disabled={isLoading || !loginForm.formState.isValid}
-        >
-          {isLoading ? <CircularProgress size={24} /> : "LOGIN"}
-        </Button>
-      </form>
+    <AuthFormContainer
+      isAuthenticated={isAuthenticated}
+      onSubmit={loginForm.handleSubmit(handleLogin)}
+    >
+      <AuthFormField
+        name="email"
+        control={loginForm.control}
+        label="Email"
+        type="email"
+        disabled={isLoading}
+        errors={loginForm.formState.errors}
+      />
+
+      <AuthFormField
+        name="password"
+        control={loginForm.control}
+        label="Password"
+        type="password"
+        disabled={isLoading}
+        errors={loginForm.formState.errors}
+      />
+
+      <AuthSubmitButton
+        isLoading={isLoading}
+        disabled={!loginForm.formState.isValid}
+      >
+        LOGIN
+      </AuthSubmitButton>
 
       <Box
         sx={{
@@ -177,6 +152,6 @@ export const Login = () => {
           />
         </Box>
       </Box>
-    </AuthLayout>
+    </AuthFormContainer>
   );
 };

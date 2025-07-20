@@ -1,133 +1,87 @@
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { 
-  Box, 
-  TextField, 
-  Button,
-  CircularProgress,
-} from '../components/base';
-import { AuthLayout } from '../components/organisms/AuthLayout';
-import { useAuth } from '../hooks/useAuth';
-import { registerSchema, type RegisterFormData } from '../schemas';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import { Box } from "../components/base";
+import {
+  AuthFormField,
+  AuthSubmitButton,
+  AuthFormContainer,
+} from "../components/molecules";
+import { useAuth } from "../hooks/useAuth";
+import { registerSchema, type RegisterFormData } from "../schemas";
 
 export const Register = () => {
   const registerForm = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onChange',
+    mode: "onChange",
   });
-  
-  const { register, isLoading, isAuthenticated } = useAuth();
+
+    const { register, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  
-  // If already authenticated, redirect to dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
 
   const handleRegister = async (data: RegisterFormData) => {
     try {
       await register(data);
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch {
       // Error is handled by useAuth with toast notifications
     }
   };
 
   return (
-    <AuthLayout>
-      <form onSubmit={registerForm.handleSubmit(handleRegister)}>
-        <Controller
+    <AuthFormContainer
+      isAuthenticated={isAuthenticated}
+      onSubmit={registerForm.handleSubmit(handleRegister)}
+    >
+        <AuthFormField
           name="name"
           control={registerForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Full Name"
-              margin="normal"
-              error={Boolean(registerForm.formState.errors.name)}
-              helperText={registerForm.formState.errors.name?.message}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Controller
-          name="email"
-          control={registerForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Email"
-              margin="normal"
-              error={Boolean(registerForm.formState.errors.email)}
-              helperText={registerForm.formState.errors.email?.message}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Box display="flex" gap={2}>
-          <Controller
-            name="role"
-            control={registerForm.control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Role (optional)"
-                margin="normal"
-                disabled={isLoading}
-              />
-            )}
-          />
-          <Controller
-            name="department"
-            control={registerForm.control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Department (optional)"
-                margin="normal"
-                disabled={isLoading}
-              />
-            )}
-          />
-        </Box>
-        <Controller
-          name="password"
-          control={registerForm.control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-              error={Boolean(registerForm.formState.errors.password)}
-              helperText={registerForm.formState.errors.password?.message}
-              disabled={isLoading}
-            />
-          )}
+          label="Full Name"
+          disabled={isLoading}
+          errors={registerForm.formState.errors}
         />
 
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          size="large"
-          sx={{ mt: 3 }}
+        <AuthFormField
+          name="email"
+          control={registerForm.control}
+          label="Email"
+          type="email"
           disabled={isLoading}
+          errors={registerForm.formState.errors}
+        />
+
+        <Box display="flex" gap={2}>
+          <AuthFormField
+            name="role"
+            control={registerForm.control}
+            label="Role (optional)"
+            disabled={isLoading}
+            errors={registerForm.formState.errors}
+          />
+          <AuthFormField
+            name="department"
+            control={registerForm.control}
+            label="Department (optional)"
+            disabled={isLoading}
+            errors={registerForm.formState.errors}
+          />
+        </Box>
+
+        <AuthFormField
+          name="password"
+          control={registerForm.control}
+          label="Password"
+          type="password"
+          disabled={isLoading}
+          errors={registerForm.formState.errors}
+        />
+
+        <AuthSubmitButton
+          isLoading={isLoading}
+          disabled={!registerForm.formState.isValid}
         >
-          {isLoading ? <CircularProgress size={24} /> : 'REGISTER'}
-        </Button>
-      </form>
-    </AuthLayout>
+          REGISTER
+        </AuthSubmitButton>
+    </AuthFormContainer>
   );
-}; 
+};
