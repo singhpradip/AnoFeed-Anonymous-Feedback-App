@@ -143,4 +143,10 @@ export interface DashboardStats {
   receivedFeedback: number;
   givenFeedback: number;
   teamsCount: number;
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
 } 
