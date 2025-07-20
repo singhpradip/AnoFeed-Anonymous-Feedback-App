@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosRequestHeaders } from 'axios';
-import { API_BASE_URL, LOCAL_STORAGE_KEYS } from '../constants';
+import { CONFIG } from '../config/environment';
+import { LOCAL_STORAGE_KEYS } from '../constants';
 import { globalHeaders } from '../utils/globalHeaders';
 import { decodeJWT, isTokenExpired } from '../utils/jwt';
 import type { JWTPayload } from '../utils/jwt';
@@ -11,7 +12,7 @@ export interface RefreshTokenResponse {
 }
 
 export const API = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: CONFIG.API_BASE_URL,
   timeout: 10000,
 });
 
@@ -64,7 +65,7 @@ API.interceptors.response.use(
           
           // Attempt to refresh the token
           const response = await axios.post<RefreshTokenResponse>(
-            `${API_BASE_URL}/auth/refresh`,
+            `${CONFIG.API_BASE_URL}/auth/refresh`,
             {
               refresh: refreshToken,
               'tenant-id': localStorage.getItem(LOCAL_STORAGE_KEYS.TENANT),
