@@ -6,10 +6,12 @@ import {
 } from "../api";
 import { LOCAL_STORAGE_KEYS } from "../constants";
 import { decodeJWT, isTokenExpired } from "../utils";
+import { useToast } from "./useToast";
 import type { LoginData, RegisterData, User } from "../types";
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   // Check if user has valid token
   const getStoredToken = () => {
@@ -50,16 +52,30 @@ export const useAuth = () => {
 
         // Invalidate and refetch all queries
         queryClient.invalidateQueries();
+
+        // Show success message
+        toast.success("Successfully logged in!");
       }
     },
     onError: (error) => {
-      console.error("Login failed:", error);
+      const apiError = error as { response?: { data?: { message?: string } } };
+      const errorMsg =
+        apiError.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMsg);
       logout();
     },
   });
 
   // Logout mutation
   const logoutMutation = useLogoutMutation({
+    onSuccess: () => {
+      toast.success("Successfully logged out!");
+    },
+    onError: (error) => {
+      const apiError = error as { response?: { data?: { message?: string } } };
+      const errorMsg = apiError.response?.data?.message || "Logout failed";
+      toast.error(errorMsg);
+    },
     onSettled: () => {
       logout();
     },

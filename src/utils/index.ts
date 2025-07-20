@@ -129,4 +129,4 @@ export const generateRandomColor = (): string => {
 
 // JWT and Auth utilities
 export * from './jwt';
-export * from './globalHeaders'; 
+export * from "./globalHeaders";
